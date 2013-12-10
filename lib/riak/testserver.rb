@@ -1,87 +1,91 @@
 require "riak/testserver/version"
 
-#module Riak
-#  module Testserver
-#    # Your code goes here...
-#  end
-#end
-
-require 'riak/node'
+require 'riak/core'
+require 'riak/test_node'
 
 module Riak
-  class TestServer < Node
-    # Creates a TestServer node, using the in-memory backend
-    def initialize(configuration = {})
-      configuration[:env] ||= {}
-      configuration[:env][:riak_kv] ||= {}
-      (configuration[:env][:riak_kv][:add_paths] ||= []) << File.expand_path("../../../erl_src", __FILE__)
-      configuration[:env][:riak_kv][:test] = true
-      configuration[:env][:memory_backend] ||={}
-      configuration[:env][:memory_backend][:test] = true
-      configuration[:env][:riak_search] ||= {}
-      configuration[:env][:riak_search][:search_backend] = :riak_search_test_backend
-      super configuration
-    end
-
-    # Overrides the default {Node#started?} to simply return true if the
-    # console is still attached.
-    def started?
-      open? || super
-    end
-
-    # Overrides the default {Node#start} to return early if the
-    # console is still attached. Otherwise, starts and immediately
-    # attaches the console.
-    def start
-      unless open?
-        super
-        maybe_attach
+  module TestServer
+    # The TestServer is a special {Node} that uses in-memory storage
+    # engines that are easily cleared. This is helpful when running test
+    # suites that store and retrieve objects from Riak and expect a
+    # clean-slate at the beginning of each test. Like {Node}, creation
+    # is idempotent, so you can keep the server around between runs of
+    # your test suite.
+    class Harness < Node
+      # Creates a TestServer node, using the in-memory backend
+      def initialize(configuration = {})
+        configuration[:env] ||= {}
+        configuration[:env][:riak_kv] ||= {}
+        (configuration[:env][:riak_kv][:add_paths] ||= []) << File.expand_path("../../../erl_src", __FILE__)
+        configuration[:env][:riak_kv][:test] = true
+        configuration[:env][:memory_backend] ||={}
+        configuration[:env][:memory_backend][:test] = true
+        configuration[:env][:riak_search] ||= {}
+        configuration[:env][:riak_search][:search_backend] = :riak_search_test_backend
+        super configuration
       end
-    end
 
-    # Overrides the default {Node#stop} to close the console before
-    # stopping the node.
-    def stop
-      @console.close if @console && !@console.frozen?
-      @console = nil
-      super
-    end
-
-    # Overrides the default {Node#drop} to simply clear the in-memory
-    # backends.
-    def drop
-      begin
-        maybe_attach
-        @console.command "#{kv_backend}:reset()."
-        @console.command "riak_search_test_backend:reset()."
-      rescue IOError
-        retry
+      # Overrides the default {Node#started?} to simply return true if the
+      # console is still attached.
+      def started?
+        open? || super
       end
-    end
 
-    protected
-    # Tries to reattach the console if it's closed
-    def maybe_attach
-      unless open?
+      # Overrides the default {Node#start} to return early if the
+      # console is still attached. Otherwise, starts and immediately
+      # attaches the console.
+      def start
+        unless open?
+          super
+          maybe_attach
+        end
+      end
+
+      # Overrides the default {Node#stop} to close the console before
+      # stopping the node.
+      def stop
         @console.close if @console && !@console.frozen?
-        @console = attach
+        @console = nil
+        super
       end
-    end
 
-    def open?
-      @console && @console.open?
-    end
-
-    def configure_data
-      super
-      if version < "1.0.0"
-        env[:riak_kv][:storage_backend] = :riak_kv_test014_backend
-      elsif version =~ /^1\.[01]\.\d+$/ # 1.0 and 1.1 series
-        env[:riak_kv][:storage_backend] = :riak_kv_test_backend
-      else
-        # TODO: change this when 1.2+ is released, if it includes riak_kv#314
-        env[:riak_kv][:storage_backend] = :riak_kv_memory_backend
+      # Overrides the default {Node#drop} to simply clear the in-memory
+      # backends.
+      def drop
+        begin
+          maybe_attach
+          @console.command "#{kv_backend}:reset()."
+          @console.command "riak_search_test_backend:reset()."
+        rescue IOError
+          retry
+        end
       end
+
+      protected
+      # Tries to reattach the console if it's closed
+      def maybe_attach
+        unless open?
+          @console.close if @console && !@console.frozen?
+          @console = attach
+        end
+      end
+
+      def open?
+        @console && @console.open?
+      end
+
+      def configure_data
+        super
+        if version < "1.0.0"
+          env[:riak_kv][:storage_backend] = :riak_kv_test014_backend
+        elsif version =~ /^1\.[01]\.\d+$/ # 1.0 and 1.1 series
+          env[:riak_kv][:storage_backend] = :riak_kv_test_backend
+        else
+          # TODO: change this when 1.2+ is released, if it includes riak_kv#314
+          env[:riak_kv][:storage_backend] = :riak_kv_memory_backend
+        end
+      end
+
     end
   end
 end

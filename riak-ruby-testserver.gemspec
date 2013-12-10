@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = Riak::TestServer::VERSION
   spec.authors       = ["Randy Secrist"]
   spec.email         = ["randy.secrist@gmail.com"]
-  spec.description   = %q{A gem description}
-  spec.summary       = %q{A gem summary}
+  spec.description   = %q{Generates a developer friendly Riak instance.}
+  spec.summary       = %q{May be handy for test suites which expect a clean data slate.}
   spec.homepage      = ""
   spec.license       = "MIT"
 
@@ -18,9 +18,14 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
 
-  spec.add_development_dependency "bundler", "~> 1.3"
-  spec.add_development_dependency "rake"
+  spec.add_dependency 'i18n'
 
+  spec.add_development_dependency 'bundler', '~> 1.3'
+  spec.add_development_dependency 'rake'
+
+  spec.add_development_dependency 'riak-client'
+
+  spec.add_development_dependency 'rack-test'
   spec.add_development_dependency 'simplecov'
   spec.add_development_dependency 'mini_shoulda'
   spec.add_development_dependency 'ruby-prof'
