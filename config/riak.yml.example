@@ -1,0 +1,13 @@
+development:
+  host: 127.0.0.1
+  http_port: 8098
+  namespace: dev_ns~
+  protocol: pbc
+
+test:
+  host: 127.0.0.1
+  http_port: 9000
+  pb_port: 9001
+  namespace: test_ns~
+  #date_format: :iso8601_ms
+  #retain_test_server: false

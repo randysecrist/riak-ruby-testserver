@@ -1,0 +1,5 @@
+require 'riak/testserver/core/deep_dup'
+require 'riak/testserver/core/i18n'
+require 'riak/testserver/core/translation'
+require 'riak/testserver/core/tcp_socket_extensions'
+require 'riak/testserver/core/config'

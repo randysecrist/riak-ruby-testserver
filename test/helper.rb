@@ -1,0 +1,71 @@
+$:.unshift(File.join(File.dirname(__FILE__), '..'))
+$:.unshift(File.dirname(__FILE__))
+
+ENV['RACK_ENV'] = 'test'
+ROOT_TEST = File.expand_path(File.dirname(__FILE__))
+
+require 'minitest/autorun'
+require 'simplecov'
+SimpleCov.start do
+  project_name "Riak Test Server"
+
+  add_filter "/test/"
+
+  add_group "Library", "lib"
+end
+
+require 'rack/test'
+#require 'mini_shoulda'
+#require 'shoulda'
+require 'pathname'
+
+puts 'Loading Library ...'
+require 'lib/riak/testserver'
+
+# fire up test server before loading app
+require 'test/support/riak_test_server'
+Riak::TestServer.load_config(File.join('config','riak.yml.example'), ENV['RACK_ENV'].to_sym)
+
+puts 'Setting up Temporary Database ...'
+Example::TestServer.setup
+success = false
+
+# these execute in reverse order on exit
+#at_exit { exit! success }
+#at_exit { puts 'Suite Tear Down' }
+#at_exit do
+#  unless $! || Test::Unit.run?
+#    success = Test::Unit::AutoRunner.run
+#    Example::TestServer.destroy # run after test suite is done
+#    success
+#  end
+#end
+#at_exit { puts 'Starting Tests ...' }
+
+require 'webmock'
+WebMock.disable_net_connect! allow_localhost: true, allow: ["#{Riak::TestServer.config[:host]}:#{Riak::TestServer.config[:http_port]}"]
+
+ROOT_DIR = File.expand_path(File.join(File.dirname(__FILE__), '.'))
+FIXTURES_PATH = Pathname.new(File.join(ROOT_DIR,'support','fixtures'))
+
+require 'faker'
+
+class Minitest::Test
+  include Rack::Test::Methods
+
+  def valid_user_details
+    user_data =  {
+      :name => 'Randy Secrist',
+      :gender =>'m',
+      :locale =>'Salt Lake City, UT',
+      :email =>'rsecrist@basho.com',
+      :phone_numbers =>['385-226-1327'],
+      :birthdate => '2013-07-30T11:21:24Z',
+      :sources => []
+    }
+  end
+
+  def assert_starts_with(expected, actual)
+    assert !(actual.match /^#{expected}/).nil?, "Expected " + actual + " to start with " + expected
+  end
+end

@@ -1,0 +1,24 @@
+#!/usr/bin/env ruby
+
+ENV['BUNDLER_GEMFILE'] = 'Gemfile'
+require 'bundler'
+require 'pry'
+
+Bundler.setup
+
+ENV["RACK_ENV"] ||= "test"
+
+$stdout.puts "Loading Console ..."
+require_relative 'lib/riak/testserver.rb'
+
+if ENV['RACK_ENV'] == 'test'
+  $stdout.puts "Starting Test Server..."
+  require_relative 'test/support/riak_test_server.rb'
+  Riak::TestServer.load_config(File.join('config','riak.yml.example'), ENV['RACK_ENV'].to_sym)
+
+  puts 'Setting up Temporary Database ...'
+  Example::TestServer.setup
+end
+
+Pry.start
+

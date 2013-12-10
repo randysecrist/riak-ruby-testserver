@@ -1,0 +1,9 @@
+en:
+  riak_testserver:
+    missing_configuration: "You are missing your ripple configuration file that should be at %{file}"
+    a: "A"
+    b:
+      c: "C"
+      d: "D"
+    e:
+      f: "F"

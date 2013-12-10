@@ -1,7 +1,10 @@
+require 'fileutils'
+require 'pathname'
+
 require "riak/testserver/version"
 
-require 'riak/core'
-require 'riak/test_node'
+require 'riak/testserver/core'
+require 'riak/testserver/node'
 
 module Riak
   module TestServer
