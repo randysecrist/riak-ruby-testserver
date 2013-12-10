@@ -78,7 +78,7 @@ end
 
 class TestServerShim
   def recycle
-    Ripple::TestServer.clear
+    Example::TestServer.clear
   end
 end
 

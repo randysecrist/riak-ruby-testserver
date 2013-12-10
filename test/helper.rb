@@ -4,7 +4,7 @@ $:.unshift(File.dirname(__FILE__))
 ENV['RACK_ENV'] = 'test'
 ROOT_TEST = File.expand_path(File.dirname(__FILE__))
 
-require 'minitest/autorun'
+require 'minitest/unit'
 require 'simplecov'
 SimpleCov.start do
   project_name "Riak Test Server"
@@ -13,10 +13,12 @@ SimpleCov.start do
 
   add_group "Library", "lib"
 end
+# prevent early calculation of coverage stats
+SimpleCov.at_exit {}
 
 require 'rack/test'
 #require 'mini_shoulda'
-#require 'shoulda'
+require 'shoulda'
 require 'pathname'
 
 puts 'Loading Library ...'
@@ -28,19 +30,24 @@ Riak::TestServer.load_config(File.join('config','riak.yml.example'), ENV['RACK_E
 
 puts 'Setting up Temporary Database ...'
 Example::TestServer.setup
-success = false
 
 # these execute in reverse order on exit
-#at_exit { exit! success }
-#at_exit { puts 'Suite Tear Down' }
-#at_exit do
-#  unless $! || Test::Unit.run?
-#    success = Test::Unit::AutoRunner.run
-#    Example::TestServer.destroy # run after test suite is done
-#    success
-#  end
-#end
-#at_exit { puts 'Starting Tests ...' }
+success = false
+at_exit { exit! success } # check for hooks added after this if tests pass; and success is still == false
+at_exit { puts 'Suite Tear Down' }
+at_exit {
+  # Spit out coverage stats.
+  SimpleCov.result.format!
+}
+at_exit do
+  # https://github.com/test-unit/test-unit/blob/v2.5.3/lib/test/unit.rb#L501
+  if $!.nil? and Test::Unit::AutoRunner.need_auto_run?
+    success = Test::Unit::AutoRunner.run
+    Example::TestServer.destroy # run after test suite is done
+    success
+  end
+end
+at_exit { puts 'Starting Tests ...' }
 
 require 'webmock'
 WebMock.disable_net_connect! allow_localhost: true, allow: ["#{Riak::TestServer.config[:host]}:#{Riak::TestServer.config[:http_port]}"]
@@ -50,22 +57,23 @@ FIXTURES_PATH = Pathname.new(File.join(ROOT_DIR,'support','fixtures'))
 
 require 'faker'
 
-class Minitest::Test
-  include Rack::Test::Methods
+#class Minitest::Test
+#class ::Test::Unit::TestCase
+#  include Rack::Test::Methods
 
-  def valid_user_details
-    user_data =  {
-      :name => 'Randy Secrist',
-      :gender =>'m',
-      :locale =>'Salt Lake City, UT',
-      :email =>'rsecrist@basho.com',
-      :phone_numbers =>['385-226-1327'],
-      :birthdate => '2013-07-30T11:21:24Z',
-      :sources => []
-    }
-  end
+#  def valid_user_details
+#    user_data =  {
+#      :name => 'Randy Secrist',
+#      :gender =>'m',
+#      :locale =>'Salt Lake City, UT',
+#      :email =>'rsecrist@basho.com',
+#      :phone_numbers =>['385-226-1327'],
+#      :birthdate => '2013-07-30T11:21:24Z',
+#      :sources => []
+#    }
+#  end
 
-  def assert_starts_with(expected, actual)
-    assert !(actual.match /^#{expected}/).nil?, "Expected " + actual + " to start with " + expected
-  end
-end
+#  def assert_starts_with(expected, actual)
+#    assert !(actual.match /^#{expected}/).nil?, "Expected " + actual + " to start with " + expected
+#  end
+#end
