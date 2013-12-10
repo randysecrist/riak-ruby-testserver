@@ -1,5 +1,3 @@
-#require 'riak/node/console'
-
 module Riak
   class Node
     # Regexp for parsing riak-admin status output. Takes into account

@@ -58,7 +58,7 @@ module Riak
 
       base_dir.each_child do |dir|
         basename = dir.basename.to_s
-        next if NODE_DIR_SKIP_LIST.include? basename.to_sym
+        next if TS_NODE_DIR_SKIP_LIST.include? basename.to_sym
         target = Pathname.new("#{root.to_s}")
         target.mkpath
         FileUtils.cp_r(dir.to_s,target)
