@@ -4,7 +4,7 @@ $:.unshift(File.dirname(__FILE__))
 ENV['RACK_ENV'] = 'test'
 ROOT_TEST = File.expand_path(File.dirname(__FILE__))
 
-require 'minitest/unit'
+#require 'minitest/unit'
 require 'simplecov'
 SimpleCov.start do
   project_name "Riak Test Server"
@@ -17,7 +17,6 @@ end
 SimpleCov.at_exit {}
 
 require 'rack/test'
-#require 'mini_shoulda'
 require 'shoulda'
 require 'pathname'
 
