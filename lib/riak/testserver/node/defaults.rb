@@ -23,7 +23,13 @@ module Riak
         :mapred_system => :pipe,
         :mapred_2i_pipe => true,
         :listkeys_backpressure => true,
-        :add_paths => []
+        :add_paths => [],
+        :anti_entropy_concurrency => 1,
+        :anti_entropy_tick => 15000,
+        :warn_siblings => 25,
+        :max_siblings => 100,
+        :warn_object_size => 1048576,
+        :max_object_size => 5242880
       },
       :riak_search => {
         :enabled => false
@@ -57,15 +63,22 @@ module Riak
         :auth => :userlist,
         :userlist => {"user" => "pass"},
         :admin => true
+      },
+      :yokozuna => {
+        :solr_jvm_args => "-Xms128m -Xmx128m -XX:+UseStringCache -XX:+UseCompressedOops",
+        :solr_jmx_port => 9003,
+        :solr_port => 9004,
+        :enabled => true
       }
     }.freeze
 
     # Based on Riak 1.1.
     TS_VM_DEFAULTS = {
       "+K" => true,
-      "+A" => 64,
+      "+A" => 16,
       "-smp" => "enable",
       "+W" => "w",
+      "+P" => 64000,
       "-env ERL_MAX_PORTS" => 4096,
       "-env ERL_FULLSWEEP_AFTER" => 0
     }.freeze
