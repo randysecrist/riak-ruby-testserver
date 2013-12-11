@@ -5,13 +5,13 @@ module Riak
       :riak_api => {
       },
       :riak_core => {
-        :ring_creation_size => 64
+        :ring_creation_size => 8
       },
       :riak_kv => {
         :storage_backend => :riak_kv_bitcask_backend,
-        :map_js_vm_count => 8,
-        :reduce_js_vm_count => 6,
-        :hook_js_vm_count => 2,
+        :map_js_vm_count => 0,
+        :reduce_js_vm_count => 0,
+        :hook_js_vm_count => 0,
         :mapper_batch_size => 5,
         :js_max_vm_mem => 8,
         :js_thread_stack => 16,
@@ -26,10 +26,7 @@ module Riak
         :add_paths => []
       },
       :riak_search => {
-        :enabled => true
-      },
-      :luwak => {
-        :enabled => true
+        :enabled => false
       },
       :merge_index => {
         :buffer_rollover_size => 1048576,

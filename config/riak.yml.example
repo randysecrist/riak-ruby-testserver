@@ -9,5 +9,5 @@ test:
   http_port: 9000
   pb_port: 9001
   namespace: test_ns~
-  #date_format: :iso8601_ms
+  protocol: pbc
   #retain_test_server: false

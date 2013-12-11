@@ -42,7 +42,7 @@ at_exit do
   # https://github.com/test-unit/test-unit/blob/v2.5.3/lib/test/unit.rb#L501
   if $!.nil? and Test::Unit::AutoRunner.need_auto_run?
     success = Test::Unit::AutoRunner.run
-    Example::TestServer.destroy # run after test suite is done
+    Example::TestServer.destroy unless Riak::TestServer.config[:retain_test_server] == true
     success
   end
 end
