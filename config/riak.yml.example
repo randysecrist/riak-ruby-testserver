@@ -12,5 +12,14 @@ test:
   handoff_port: 9002
   namespace: test_ns~
   protocol: pbc
+
+  # Test Only Options
+
+  # Enable to point tests to a remote server
+  # May encounter issues with tests that rely on cleanup
+  # Be sure to update the http / pb ports
   #skip_testserver: true
+
+  # Enable to prevent the test helper from deleting all
+  # the data when the test run is complete.
   #retain_test_server: true
