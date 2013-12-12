@@ -15,6 +15,12 @@ module Example
     def self.setup
       unless instance.remote
         instance.recreate
+
+        # compile any erlang sources
+        instance.erlang_sources.each do |p|
+          `#{instance.root}/erts-*/bin/erlc -o #{p} #{p}/*` if p.exist?
+        end
+
         instance.start
         status = Timeout.timeout(20) {
           `#{instance.admin_script} wait-for-service riak_kv #{instance.name}`
@@ -66,6 +72,7 @@ tell the tests where to find RIAK_BIN_DIR. For example:
         options[:env][:riak_kv][:allow_strfun] = true
         options[:env][:riak_kv][:map_cache_size] ||= 0
         options[:env][:riak_kv][:http_url_encoding] = :on
+        (options[:env][:riak_kv][:add_paths] ||= []) << File.expand_path('./lib/erl_src')
         options[:env][:riak_core] ||= {}
         options[:env][:riak_core][:http] ||= [ Tuple[Riak::TestServer.config[:host], Riak::TestServer.config[:http_port]] ]
         options[:env][:riak_core][:handoff_port] ||= Riak::TestServer.config[:handoff_port]
