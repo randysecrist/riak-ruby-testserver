@@ -50,27 +50,28 @@ tell the tests where to find RIAK_BIN_DIR. For example:
 
     @private
     def initialize(options=Riak::TestServer.config.dup)
-      if Riak::TestServer.config[:host] == "127.0.0.1"
+      @remote = Riak::TestServer.config[:skip_testserver]
+      @remote = true unless Riak::TestServer.config[:host] == "127.0.0.1"
+
+      unless @remote
+        options[:root] ||= (ENV['RIAK_TEST_PATH'] || '/tmp/.example.riak')
         options[:env] ||= {}
-        options[:env][:riak_api] ||= {}
         options[:env][:riak_kv] ||= {}
         if js_source_dir = Riak::TestServer.config.delete(:js_source_dir)
           options[:env][:riak_kv][:js_source_dir] ||= js_source_dir
         end
         options[:env][:riak_kv][:allow_strfun] = true
         options[:env][:riak_kv][:map_cache_size] ||= 0
+        options[:env][:riak_kv][:http_url_encoding] = :on
         options[:env][:riak_core] ||= {}
         options[:env][:riak_core][:http] ||= [ Tuple[Riak::TestServer.config[:host], Riak::TestServer.config[:http_port]] ]
         options[:env][:riak_core][:handoff_port] ||= Riak::TestServer.config[:handoff_port]
+        options[:env][:riak_core][:slide_private_dir] ||= options[:root] + '/slide-data'
+        options[:env][:riak_api] ||= {}
         options[:env][:riak_api][:pb_port] ||= Riak::TestServer.config[:pb_port]
         options[:env][:riak_api][:pb_ip] ||= Riak::TestServer.config[:host]
-        options[:root] ||= (ENV['RIAK_TEST_PATH'] || '/tmp/.example.riak')
         options[:source] ||= find_riak
-        options[:env][:riak_core][:slide_private_dir] ||= options[:root] + '/slide-data'
         super(options)
-        @env[:riak_kv][:http_url_encoding] = :on
-      else
-        @remote = true
       end
     end
   end

@@ -4,7 +4,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'riak/testserver/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "riak-ruby-testserver"
+  spec.name          = "riak-testserver"
   spec.version       = Riak::TestServer::VERSION
   spec.authors       = ["Randy Secrist"]
   spec.email         = ["randy.secrist@gmail.com"]

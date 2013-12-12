@@ -56,23 +56,22 @@ FIXTURES_PATH = Pathname.new(File.join(ROOT_DIR,'support','fixtures'))
 
 require 'faker'
 
-#class Minitest::Test
-#class ::Test::Unit::TestCase
-#  include Rack::Test::Methods
+class ::Test::Unit::TestCase
+  include Rack::Test::Methods
 
-#  def valid_user_details
-#    user_data =  {
-#      :name => 'Randy Secrist',
-#      :gender =>'m',
-#      :locale =>'Salt Lake City, UT',
-#      :email =>'rsecrist@basho.com',
-#      :phone_numbers =>['385-226-1327'],
-#      :birthdate => '2013-07-30T11:21:24Z',
-#      :sources => []
-#    }
-#  end
+  def valid_user_details
+    @user_data ||=  {
+      :name => Faker::Name.name,
+      :gender => 'm',
+      :locale => "#{Faker::Address.city}, #{Faker::Address.state_abbr}",
+      :email => Faker::Internet.email,
+      :phone_numbers =>[Faker::PhoneNumber.phone_number, Faker::PhoneNumber.cell_phone],
+      :birthdate => '2013-07-30T11:21:24Z',
+      :sources => []
+    }
+  end
 
-#  def assert_starts_with(expected, actual)
-#    assert !(actual.match /^#{expected}/).nil?, "Expected " + actual + " to start with " + expected
-#  end
-#end
+  def assert_starts_with(expected, actual)
+    assert !(actual.match /^#{expected}/).nil?, "Expected " + actual + " to start with " + expected
+  end
+end

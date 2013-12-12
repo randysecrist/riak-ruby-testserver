@@ -1,6 +1,7 @@
 development:
   host: 127.0.0.1
   http_port: 8098
+  pb_port: 8087
   namespace: dev_ns~
   protocol: pbc
 
@@ -11,4 +12,5 @@ test:
   handoff_port: 9002
   namespace: test_ns~
   protocol: pbc
+  #skip_testserver: true
   #retain_test_server: true
