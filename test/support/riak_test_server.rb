@@ -16,7 +16,9 @@ module Example
       unless instance.remote
         instance.recreate
         instance.start
-        puts `#{instance.admin_script} wait-for-service riak_kv #{instance.name}`
+        status = Timeout.timeout(20) {
+          `#{instance.admin_script} wait-for-service riak_kv #{instance.name}`
+        }
       end
     end
 
