@@ -42,10 +42,12 @@ module Example
 
     def validate_riak_location(bin_dir)
       return nil unless bin_dir
+      # what my human brain does when making sure the bin_dir has everything
       subdirs = Dir.entries(File.expand_path('..', bin_dir))
       subdirs[2] == 'bin' && subdirs[3] == 'data' && subdirs[4].match(/erts/) &&
       subdirs[5] == 'etc' && subdirs[6] == 'lib' && subdirs[7] == 'log' &&
       subdirs[8] == 'releases'
+      # testserver doesn't care about the solr-webapp 'yet'
     end
 
     def find_riak
@@ -72,7 +74,7 @@ tell the tests where to find RIAK_BIN_DIR. For example:
       EOM
         exit 1
       end
-      return dir
+      return riak_bin_dir
     end
 
     @private
