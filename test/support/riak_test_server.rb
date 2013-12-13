@@ -40,9 +40,27 @@ module Example
       end
     end
 
+    def validate_riak_location(bin_dir)
+      return nil unless bin_dir
+      subdirs = Dir.entries(File.expand_path('..', bin_dir))
+      subdirs[2] == 'bin' && subdirs[3] == 'data' && subdirs[4].match(/erts/) &&
+      subdirs[5] == 'etc' && subdirs[6] == 'lib' && subdirs[7] == 'log' &&
+      subdirs[8] == 'releases'
+    end
+
     def find_riak
-      dir = ENV['RIAK_BIN_DIR'] || ENV['PATH'].split(':').detect { |dir| File.exists?(dir+'/riak') }
-      unless dir
+      # best reasonable guess (using path) at finding riak for developer use
+      path_result = ENV['PATH'].split(':').detect { |dir| File.exists?(dir + '/riak') }
+      if path_result
+        potential_path = File.absolute_path(File.readlink("#{path_result}/riak"), path_result)
+        if potential_path.match /Cellar/ #homebrew
+          potential_path = File.expand_path('../../libexec/bin', potential_path)
+        end
+      end
+
+      # setting the env variable should trump any guesses
+      riak_bin_dir = ENV['RIAK_BIN_DIR'] || potential_path
+      unless validate_riak_location(riak_bin_dir)
         raise RiakNotFound.new <<-EOM
 
 You must have riak installed and in your path to run the tests
