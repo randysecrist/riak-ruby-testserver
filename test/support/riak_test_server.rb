@@ -97,6 +97,9 @@ tell the tests where to find RIAK_BIN_DIR. For example:
         options[:env][:riak_core][:http] ||= [ Tuple[Riak::TestServer.config[:host], Riak::TestServer.config[:http_port]] ]
         options[:env][:riak_core][:handoff_port] ||= Riak::TestServer.config[:handoff_port]
         options[:env][:riak_core][:slide_private_dir] ||= options[:root] + '/slide-data'
+        options[:env][:riak_core][:default_bucket_props] = [
+          Tuple[:allow_mult, false]
+        ]
         options[:env][:riak_api] ||= {}
         options[:env][:riak_api][:pb_port] ||= Riak::TestServer.config[:pb_port]
         options[:env][:riak_api][:pb_ip] ||= Riak::TestServer.config[:host]
