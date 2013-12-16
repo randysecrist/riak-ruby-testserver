@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = Riak::TestServer::VERSION
   spec.authors       = ["Randy Secrist"]
   spec.email         = ["randy.secrist@gmail.com"]
-  spec.description   = %q{Generates a developer friendly Riak instance.}
-  spec.summary       = %q{May be handy for test suites which expect a clean data slate.}
+  spec.description   = %q{Provides ruby tests with a clearable data slate mechanism based on Riak.}
+  spec.summary       = %q{A standalone riak instance where data may be freely deleted (as needed) during a ruby test run.}
   spec.homepage      = ""
   spec.license       = "MIT"
 
